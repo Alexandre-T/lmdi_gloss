@@ -150,6 +150,8 @@ class listener implements EventSubscriberInterface
 		{
 			$rech = $glossterms['rech'];
 			$remp = $glossterms['remp'];
+			$term = $glossterms['term'];
+			$desc = $glossterms['desc'];
 			preg_match_all ('#[][><][^][><]*|[^][><]+#', $texte, $matches);
 			$parts = $matches[0];
 			if (empty($parts))
@@ -216,6 +218,7 @@ class listener implements EventSubscriberInterface
 					empty($acro) && empty($img) && empty($code) && empty($link) && empty($script))
 				{
 					$part = preg_replace ($rech, $remp, $part);
+					$part = str_replace ($term, $desc, $part);
 					$parts[$index] = $part;
 				}
 			}
@@ -284,12 +287,14 @@ class listener implements EventSubscriberInterface
 					if (!in_array ($variant, $done))
 					{
 						$done[] = $variant;
-						$remp  = "<acronym class=\"id{$term_id}\" title=\"$desc\">$1</acronym>";
+						$remp  = "<acronym class=\"id{$term_id}\" title=\"###{$term_id}###\">$1</acronym>";
 						$firstspace = '/\b(';
 						$lastspace = ')\b/ui';	// PCRE - u = UTF-8 - i = case insensitive
 						$rech = $firstspace . $variant . $lastspace;
-						$glossterms['rech'][] = $rech;
-						$glossterms['remp'][] = $remp;
+						$glossterms['rech'][$term_id] = $rech;
+						$glossterms['remp'][$term_id] = $remp;
+						$glossterms['desc'][$term_id] = $desc;
+						$glossterms['term'][$term_id] = "###{$term_id}###";
 					}
 				}
 			}
